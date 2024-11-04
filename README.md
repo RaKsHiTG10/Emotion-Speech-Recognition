@@ -1,18 +1,18 @@
 
-#install kaggle
+# Istall kaggle
 !pip install -q kaggle
 
 from google.colab import drive
 drive.mount('/content/drive')
 
-#Create a kaggle folder
+# Create a kaggle folder
 ! mkdir ~/.kaggle/
 
 ! kaggle datasets download -d ejlok1/toronto-emotional-speech-set-tess
 
 !unzip /content/toronto-emotional-speech-set-tess.zip
 
-#copy the kaggle.json folder to folder created
+# Copy the kaggle.json folder to folder created
 ! cp /content/drive/MyDrive/Kaggle/kaggle.json ~/.kaggle/
 
 ! chmod 600 ~/.kaggle/kaggle.json
@@ -28,15 +28,15 @@ import numpy as np # multi dimensional array and matrices (numerical calculation
 import os #provides way of using operating system dependent functionality such as reading and writing to the file system or reading a file from file
 import matplotlib.pyplot as plt #for generating plots like hist
 import seaborn as sns #data visualization
-import librosa # its is a python pacakage for music and audio analysis ..it provides building blocks necessary to create music info system.. it is often used to extract features from the audio
+import librosa #its is a python pacakage for music and audio analysis ..it provides building blocks necessary to create music info system.. it is often used to extract features from the audio
 import librosa.display #module within lib to display to visualize the data
 import IPython.display as ipd #to display the audio voices in the notebook allowing you to play audio directly within the notebook by this we can play the audio
 import warnings #to ignore the warnings especially when working with a lot of data with complex operations
 warnings.filterwarnings('ignore')
 from keras import utils #deep learning library deep learning API written in python keras means its on the top of tensor its used to create and train neural networks the utils..
-# utils is a module which include utility function and classes such as converting levels to categorical forms
+#utils is a module which include utility function and classes such as converting levels to categorical forms
 
-"""Loading the Dataset"""
+# Loading the Dataset
 
 paths = [] #list of all the file path
 labels = [] #list of all the label corresponding to each of file
@@ -94,12 +94,12 @@ print(df['label'].unique())
 df.head()
 
 df['speech'].unique()# unique: the method returns an array containing values from the speech coulumn
-# unique is useful for task such as verifying data uniqueness checking for specific data entries or preparing data for further analysis
+#unique is useful for task such as verifying data uniqueness checking for specific data entries or preparing data for further analysis
 
 from IPython.display import Audio
 emotion = 'fear'
 path = np.array(df['speech'][df['label']== emotion])[0] # converts rhe results into numpy array and types the first element
-# assuming there is only one path corresponding to emotion
+#assuming there is only one path corresponding to emotion
 data, sr = librosa.load(path) # loads the file specified by the path
 waveplot(data, sr, emotion)
 spectogram(data, sr, emotion)
@@ -149,20 +149,19 @@ waveplot(data, sr, emotion)
 spectogram(data, sr, emotion)
 Audio(path)
 
-"""Feature Extraction"""
+# Feature Extraction
 
-'''
-MFCC Calculation Steps:
+# MFCC Calculation Steps:
 
-Pre-emphasis: A high-pass filter is applied to the signal to emphasize higher frequencies.
-Framing: The audio signal is divided into small overlapping frames to capture short-term spectral features.
-Windowing: Each frame is windowed (e.g., using a Hamming window) to reduce spectral leakage.
-Fast Fourier Transform (FFT): The Fourier transform is applied to convert each frame from the time domain to the frequency domain.
-Power Spectrum: The magnitude of the FFT is squared to obtain the power spectrum.
-Mel Filter Bank: The power spectrum is passed through a series of Mel-spaced filters to model human hearing. Each filter sums the power in its frequency range.
-Logarithm: The logarithm of the Mel-filtered energies is taken to mimic human loudness perception.
-Discrete Cosine Transform (DCT): The DCT is applied to the log Mel spectrum to obtain the cepstral coefficients, which are the MFCCs.
-'''
+#Pre-emphasis: A high-pass filter is applied to the signal to emphasize higher frequencies.
+#Framing: The audio signal is divided into small overlapping frames to capture short-term spectral features.
+#Windowing: Each frame is windowed (e.g., using a Hamming window) to reduce spectral leakage.
+#Fast Fourier Transform (FFT): The Fourier transform is applied to convert each frame from the time domain to the frequency domain.
+#Power Spectrum: The magnitude of the FFT is squared to obtain the power spectrum.
+#Mel Filter Bank: The power spectrum is passed through a series of Mel-spaced filters to model human hearing. Each filter sums the power in its frequency range.
+#Logarithm: The logarithm of the Mel-filtered energies is taken to mimic human loudness perception.
+#Discrete Cosine Transform (DCT): The DCT is applied to the log Mel spectrum to obtain the cepstral coefficients, which are the MFCCs.
+
 def extract_mfcc(file_name): # extract mfcc means is a single parameter or filename wrt the path of an audio file
   y, sr = librosa.load(file_name, duration=3, offset=0.5) #y uses library to load the audio file specified by the filename
   #s is the dimensional array containing the audio signal; y and sr is is the integer that represent the sampling rate of the audio file ;
@@ -172,14 +171,14 @@ def extract_mfcc(file_name): # extract mfcc means is a single parameter or filen
   #code is extract mfcc function loads a specified audio file and extract 40 mfcc from three second segment starting from 0.5 sec into the audio and avg of mfcc over time and
   #it returns resulting feature vector
   return mfcc
-  # mfcc is widely used speech and audio processing to represent the power spectrum of audio signal that makes useful for task such as speech emotion
+  #mfcc is widely used speech and audio processing to represent the power spectrum of audio signal that makes useful for task such as speech emotion
   #emotion detection or audio classification problem
 
 extract_mfcc(df['speech'][0]) # means select the column from df column 0 means it access the first element in the column
 #extract_mfcc recalls the function passing the path to the first audio file
 
 x_mfcc = df['speech'].apply(lambda x: extract_mfcc(x)) # means it applies the extract mfcc function to the audio file path in the speech column of the data frame and
-# store the resulting mfcc feature vector in x_mfcc variable ; apply lambda it extract mfcc ,applies the lambda function it is anonymous function to speech column
+#store the resulting mfcc feature vector in x_mfcc variable ; apply lambda it extract mfcc ,applies the lambda function it is anonymous function to speech column
 #lambda function takes an argument x and passes to the extract mfcc function
 
 x_mfcc # displays the series that contains mfcc feature vector from each audio file path in the speech column of the dataframe df
@@ -188,7 +187,7 @@ X = [x for x in x_mfcc] # x means it is iterating over each element in x_mfcc
 X = np.array(X)
 X.shape
 
-# input split
+#input split
 X = np.expand_dims(X, -1) # function that add an extra dimensions to the numpy array ; -1 means it adds new axis at the end(last position)
 X.shape # dataset is packed so we add one axis so tat we can edit features in it
 
@@ -204,8 +203,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 from keras.models import Sequential #function from keras sequential for intializing the model dense for fully connected and lstm for long term memory and dropout for regularization
 from keras.layers import Dense, LSTM, Dropout # lstm- long short term memory .. it construct the model in keras and sequential layers tracking layers we used here are
-# lstm dropout dense layer dropout and lstm are used for sequence processing and class
-# lstm working-- previous input +previous output + previous memory
+#lstm dropout dense layer dropout and lstm are used for sequence processing and class
+#lstm working-- previous input +previous output + previous memory
 model= Sequential([LSTM(256, return_sequences=False, input_shape= (40, 1)),
     Dropout(0.5),
     Dense(128, activation='relu'), # relu is rectified linear unit adds fully connected dense layer with 128 and 64 unit ; equation for relu function - fx = max(0,1)
@@ -222,7 +221,7 @@ Model: "sequential"
 
 # Train the model
 history = model.fit(X_train, y_train, validation_data=(X_test, y_test), batch_size=64, epochs=30) # epoch - iteration over entire training data i.e no of iteration we want to train our model
-# batch size 64 means no of samples that will be propogated through the network before operating model parameter.. larger batch size results in faster training
+#batch size 64 means no of samples that will be propogated through the network before operating model parameter.. larger batch size results in faster training
 
 """Plot the results"""
 
@@ -245,7 +244,7 @@ plt.ylabel('Loss')
 plt.legend() # labels the each line ie training loss and testing
 plt.show()
 #helps us to identify how well your model is minimizing the loss function indicating the improvement both for training and valdiation data
-# loss function
+# Loss function
 
 y_pred = model.predict(X_test)
 y_pred_classes  = np.argmax(y_pred, axis=1)
@@ -257,7 +256,7 @@ cm = confusion_matrix(y_val_classes, y_pred_classes)
 # print the confusion matrix
 print("Confusion matrix")
 print(cm)
-# for computing the confusion matrix based on true class level and predicted class level
+#for computing the confusion matrix based on true class level and predicted class level
 
 # Print the classification report
 target_name = ['angry', 'disgust', 'fear', 'happy', 'neutral', 'ps', 'sad']
@@ -270,8 +269,8 @@ plt.xlabel('Predicted labels')
 plt.ylabel('True labels')
 plt.title('Confusion Matrix')
 plt.show
-# classification report that generates a text report that includes precision(true positive/true positive+ false positive), recall (true positive/true positive+ false negative)
-# f1 score 2× Precision+Recall/Precision×Recall and support(number of actual occurrences of the class in the dataset. It is simply the count of true instances for each label)
+#classification report that generates a text report that includes precision(true positive/true positive+ false positive), recall (true positive/true positive+ false negative)
+#f1 score 2× Precision+Recall/Precision×Recall and support(number of actual occurrences of the class in the dataset. It is simply the count of true instances for each label)
 #Specificity =True Negatives (TN)/True Negatives (TN)+False Positives (FP)
 #fmt =d means sets format of annotation to all the integers
 
