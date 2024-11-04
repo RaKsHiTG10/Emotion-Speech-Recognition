@@ -1,5 +1,5 @@
 
-# Istall kaggle
+# Install kaggle
 !pip install -q kaggle
 
 from google.colab import drive
